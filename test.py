@@ -72,11 +72,13 @@ class Bar(object):
         Draws the player to the target surface.
         """
 
-        pg.draw.rect(surface, BAR_COLOR, [self.x, self.y, self.width, self.height], 5)
+        self.rect = pg.draw.rect(surface, BAR_COLOR, [self.x, self.y, self.width, self.height], 5)
 
 
     def move(self, y_change, surface):
-        pg.draw.rect(surface, BAR_COLOR, [self.x, self.y + y_change, self.width, self.height], 5)
+        self.rect.y +=y_change
+        surface.blit(surface, self.rect)
+        pg.time.Clock().tick(40)
         pg.display.update()
 
 def event_action(evt):
@@ -110,11 +112,14 @@ def main():
     bar.draw(screen)
     bar1.draw(screen)
     pg.display.update()
-    time.sleep(10)
+
 
     y_change = 0
 
     while running:
+
+
+
         for evt in pg.event.get():
             event_action(evt)
             if evt.type == pg.QUIT:
