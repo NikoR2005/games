@@ -16,6 +16,8 @@ DIRECT_DICT = {pg.K_LEFT: (-1, 0),
                pg.K_UP: (0, -1),
                pg.K_DOWN: (0, 1)}
 
+clock = pg.time.Clock()
+
 
 class Circle(object):
 
@@ -45,49 +47,29 @@ class Bar(object):
         self.key_up = key_up
         self.key_down = key_down
         self.animate_fps = 144
+        self.bar_size = (24, 96)
+        self.rect = pg.rect.Rect((self.x, self.y, self.width, self.height))
+
+    def handle_keys(self):
+        key = pg.key.get_pressed()
+        dist = 1
+        if key[pg.K_LEFT]:
+            self.rect.move_ip(-1, 0)
+        if key[pg.K_RIGHT]:
+            self.rect.move_ip(1, 0)
+        if key[pg.K_UP]:
+            self.rect.move_ip(0, -1)
+        if key[pg.K_DOWN]:
+            self.rect.move_ip(0, 1)
 
 
-    def get_event(self, event):
-        """
-        Handle events pertaining to player control.
-        """
-        if event.type == self.keyUp:
-            self.add_direction(event.key)
-        elif event.type == self.keyDown:
-            self.pop_direction(event.key)
-
-    def update(self, now, screen_rect):
-        """
-        Updates our player appropriately every frame.
-        """
-        self.adjust_images(now)
-        if self.direction_stack:
-            direction_vector = DIRECT_DICT[self.direction]
-            self.rect.x += self.speed * direction_vector[0]
-            self.rect.y += self.speed * direction_vector[1]
-            self.rect.clamp_ip(screen_rect)
-
-    def draw(self, surface):
+    def draw(self, screen):
         """
         Draws the player to the target surface.
         """
+        pg.draw.rect(screen, (0, 0, 128), self.rect)
 
-        self.rect = pg.draw.rect(surface, BAR_COLOR, [self.x, self.y, self.width, self.height], 5)
 
-
-    def move(self, y_change, surface):
-        self.rect.y +=y_change
-        surface.blit(surface, self.rect)
-        pg.time.Clock().tick(40)
-        pg.display.update()
-
-def event_action(evt):
-    if evt.type == pg.KEYUP:
-        if evt.key == pg.K_SPACE:
-            print('up')
-    if evt.type == pg.KEYDOWN:
-        if evt.key == pg.K_SPACE:
-            print('down')
 
 
 def main():
@@ -97,11 +79,6 @@ def main():
     running = True
     pg.init()
 
-
-
-    global SKEL_IMAGE
-    os.environ['SDL_VIDEO_CENTERED'] = '1'
-    pg.init()
     pg.display.set_caption(CAPTION)
     pg.display.set_mode(SCREEN_SIZE)
     bar = Bar(10, 10, 20, 50,  pg.KEYUP, pg.KEYDOWN)
@@ -109,8 +86,10 @@ def main():
     screen = pg.display.get_surface()
     circle = Circle(screen, (0,0,255), 150, 50, 15,  3)
     circle.drawcircle()
-    bar.draw(screen)
-    bar1.draw(screen)
+
+
+#    screen.blit(bar.box_surface, (20, 10))
+
     pg.display.update()
 
 
@@ -118,23 +97,18 @@ def main():
 
     while running:
 
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                break
+                running = False
 
+        screen.fill((255, 255, 255))
 
-        for evt in pg.event.get():
-            event_action(evt)
-            if evt.type == pg.QUIT:
-                pg.quit()
-                sys.exit()
-            if evt.type == pg.KEYDOWN:
-                if evt.key == pg.K_ESCAPE:
-                    running = False
-                elif evt.key == pg.K_DOWN:
-                    print('key hit', Bar)
-                    bar.move(50, screen)
-                elif evt.key == pg.K_UP:
-                    print('key hit', Bar)
-                    y_change = -5
+        bar.draw(screen)
+        bar.handle_keys()
+        pg.display.update()
 
+        clock.tick(40)
 
 
     pg.quit()
