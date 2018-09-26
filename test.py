@@ -11,10 +11,7 @@ BACKGROUND_COLOR = pg.Color("slategray")
 BAR_COLOR = pg.Color("red")
 COLOR_KEY = pg.Color("magenta")
 
-DIRECT_DICT = {pg.K_LEFT: (-1, 0),
-               pg.K_RIGHT: (1, 0),
-               pg.K_UP: (0, -1),
-               pg.K_DOWN: (0, 1)}
+
 
 clock = pg.time.Clock()
 
@@ -34,9 +31,6 @@ class Circle(object):
         pg.draw.circle(self.canvas, self.circleColor, (self.x, self.y), self.rad, self.thickness)
 
 
-
-
-
 class Bar(object):
 
     def __init__(self, x, y, width, height, key_up, key_down):
@@ -52,15 +46,18 @@ class Bar(object):
 
     def handle_keys(self):
         key = pg.key.get_pressed()
-        dist = 1
-        if key[pg.K_LEFT]:
-            self.rect.move_ip(-1, 0)
-        if key[pg.K_RIGHT]:
-            self.rect.move_ip(1, 0)
-        if key[pg.K_UP]:
-            self.rect.move_ip(0, -1)
-        if key[pg.K_DOWN]:
-            self.rect.move_ip(0, 1)
+
+        if key[self.key_up]:
+            print(self.y)
+            if self.y > 0:
+                self.rect.move_ip(0, -1)
+                self.y -= 1
+        if key[self.key_down]:
+            print(self.y)
+            if self.y < SCREEN_SIZE[1] - self.height:
+                self.rect.move_ip(0, 1)
+                self.y += 1
+
 
 
     def draw(self, screen):
@@ -81,8 +78,8 @@ def main():
 
     pg.display.set_caption(CAPTION)
     pg.display.set_mode(SCREEN_SIZE)
-    bar = Bar(10, 10, 20, 50,  pg.KEYUP, pg.KEYDOWN)
-    bar1 = Bar(590, 80, 20, 50, pg.K_a, pg.K_q)
+    bar = Bar(10, 10, 20, 50,  pg.K_UP, pg.K_DOWN)
+    bar1 = Bar(570, 80, 20, 50, pg.K_a, pg.K_q)
     screen = pg.display.get_surface()
     circle = Circle(screen, (0,0,255), 150, 50, 15,  3)
     circle.drawcircle()
@@ -105,9 +102,11 @@ def main():
         screen.fill((255, 255, 255))
 
         bar.draw(screen)
+        bar1.draw(screen)
         bar.handle_keys()
+        bar1.handle_keys()
         pg.display.update()
-
+        pg.display.update()
         clock.tick(40)
 
 
