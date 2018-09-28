@@ -18,6 +18,9 @@ clock = pg.time.Clock()
 
 class Circle(object):
 
+    v_x = 5
+    v_y = 10
+
     def __init__(self, canvas, circleColor, x, y, rad, thickness):
         self.canvas = canvas
         self.x = x
@@ -26,9 +29,18 @@ class Circle(object):
         self.circleColor = circleColor
         self.thickness = thickness
 
-    def drawcircle(self):
+    def drawcircle(self, screen):
        # cercle = canvas.create_oval(x - rad, y - rad, x + rad, y + rad, width=0, fill=cercleColor)
-        pg.draw.circle(self.canvas, self.circleColor, (self.x, self.y), self.rad, self.thickness)
+        pg.draw.circle(screen, self.circleColor, (self.x, self.y), self.rad, self.thickness)
+        print(self.x, self.y, self.y + self.rad, SCREEN_SIZE[1])
+        if self.y + self.rad >= SCREEN_SIZE[1]:
+
+            self.v_y = -self.v_y
+
+        self.x += self.v_x
+        self.y += self.v_y
+
+
 
 
 class Bar(object):
@@ -81,8 +93,8 @@ def main():
     bar = Bar(10, 10, 20, 50,  pg.K_UP, pg.K_DOWN)
     bar1 = Bar(570, 80, 20, 50, pg.K_a, pg.K_q)
     screen = pg.display.get_surface()
-    circle = Circle(screen, (0,0,255), 150, 50, 15,  3)
-    circle.drawcircle()
+    circle = Circle(screen, COLOR_KEY, 150, 50, 15,  3)
+
 
 
 #    screen.blit(bar.box_surface, (20, 10))
@@ -103,6 +115,7 @@ def main():
 
         bar.draw(screen)
         bar1.draw(screen)
+        circle.drawcircle(screen)
         bar.handle_keys()
         bar1.handle_keys()
         pg.display.update()
