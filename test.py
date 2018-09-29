@@ -33,15 +33,16 @@ class Circle(object):
        # cercle = canvas.create_oval(x - rad, y - rad, x + rad, y + rad, width=0, fill=cercleColor)
         pg.draw.circle(screen, self.circleColor, (self.x, self.y), self.rad, self.thickness)
         print(self.x, self.y, self.y + self.rad, SCREEN_SIZE[1])
-        if self.y + self.rad >= SCREEN_SIZE[1]:
-
+        if self.y + self.rad >= SCREEN_SIZE[1] or self.y <= self.rad:
             self.v_y = -self.v_y
+        if self.x + self.rad >= SCREEN_SIZE[0] or self.x <= self.rad:
+            self.v_x = -self.v_x
+
+
+
 
         self.x += self.v_x
         self.y += self.v_y
-
-
-
 
 class Bar(object):
 
