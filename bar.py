@@ -1,25 +1,24 @@
 import pygame, sys, time
 from sys import exit
 
-
 width = 600
 height = 480
-fps = 30
-color_blanc=(225,225,225)
-color_jaune=(225,225,0)
-color_noir=(0,0,0)
+fps = 1
+color_blanc = (225, 225, 225)
+color_jaune = (225, 225, 0)
+color_noir = (0, 0, 0)
 
-#box_surace
+# box_surace
 
 color_box_surface = (99, 57, 47)
 size_box_surface = (24, 96)
 box_position = (50, 200)
-#circle(Surface, color, pos, radius, width=0) -> Rect
+# circle(Surface, color, pos, radius, width=0) -> Rect
 
 
-#box_surface_1
+# box_surface_1
 
-color_box_surface_1 = (25,99,55)
+color_box_surface_1 = (25, 99, 55)
 size_box_surface_1 = (24, 96)
 
 clock = pygame.time.Clock()
@@ -36,14 +35,14 @@ def event_action(evt):
 
 def main():
     pygame.init()
-    running=True
+    running = True
     screen = pygame.display.set_mode((width, height))
     pygame.display.set_caption("Tennis")
 
     box_surface = pygame.Surface(size_box_surface)
     box_rect = box_surface.get_rect()
     box_rect.center = box_position
-    box_surface.fill((25,0,100))
+    box_surface.fill((25, 0, 100))
 
     box_surface_1 = pygame.Surface(size_box_surface_1)
     box_rect_1 = box_surface_1.get_rect()
@@ -51,19 +50,16 @@ def main():
     box_surface_1.fill(color_box_surface_1)
     circle_surface = pygame.Surface((100, 100))
 
-    draw_circle(circle_surface, color_jaune, (50, 50), 50,)
+    draw_circle(circle_surface, color_jaune, (50, 50), 50, )
 
     y_change = 0
-
-
 
     while running:
 
         screen.fill(color_noir)
         screen.blit(box_surface, (560, 10))
-        screen.blit(box_surface_1, (20,10))
+        screen.blit(box_surface_1, (20, 10))
         pygame.display.flip()
-
 
         for evt in pygame.event.get():
             event_action(evt)
@@ -94,21 +90,21 @@ def main():
 
 
 def draw_circle(image, colour, origin, radius, width=0):
-	if width == 0:
-		pygame.draw.circle(image, colour, origin,int(radius))
-	else:
-		if radius > 65534/5: radius = 65534/5
-		circle = pygame.Surface([radius*2+width,radius*2+width]).convert_alpha()
-		circle.fill([0,0,0,0])
-		pygame.draw.circle(circle, colour, [circle.get_width()/2, circle.get_height()/2]), int(radius+(width/2))
-		if int(radius-(width/2)) > 0: pygame.draw.circle(circle, [0,0,0,0], [circle.get_width()/2, circle.get_height()/2]), abs(int(radius-(width/2)))
-		image.blit(circle, [origin[0] - (circle.get_width()/2), origin[1] - (circle.get_height()/2)])
-
+    if width == 0:
+        pygame.draw.circle(image, colour, origin, int(radius))
+    else:
+        if radius > 65534 / 5: radius = 65534 / 5
+        circle = pygame.Surface([radius * 2 + width, radius * 2 + width]).convert_alpha()
+        circle.fill([0, 0, 0, 0])
+        pygame.draw.circle(circle, colour, [circle.get_width() / 2, circle.get_height() / 2]), int(radius + (width / 2))
+        if int(radius - (width / 2)) > 0: pygame.draw.circle(circle, [0, 0, 0, 0],
+                                                             [circle.get_width() / 2, circle.get_height() / 2]), abs(
+            int(radius - (width / 2)))
+        image.blit(circle, [origin[0] - (circle.get_width() / 2), origin[1] - (circle.get_height() / 2)])
 
 
 if __name__ == '__main__':
     main()
-
 
     pygame.init()
 
@@ -156,7 +152,7 @@ if __name__ == '__main__':
         car(x, y)
 
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(600)
 
     pygame.quit()
     quit()

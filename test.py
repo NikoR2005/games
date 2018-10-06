@@ -21,13 +21,16 @@ class Circle(object):
     v_x = 5
     v_y = 10
 
-    def __init__(self, canvas, circleColor, x, y, rad, thickness):
+    def __init__(self, canvas, circleColor, x, y, rad, thickness, bar1, bar2):
         self.canvas = canvas
         self.x = x
         self.y = y
         self.rad = rad
         self.circleColor = circleColor
         self.thickness = thickness
+        self.bar1 = bar1
+        self.bar2 = bar2
+
 
     def drawcircle(self, screen):
        # cercle = canvas.create_oval(x - rad, y - rad, x + rad, y + rad, width=0, fill=cercleColor)
@@ -36,6 +39,11 @@ class Circle(object):
         if self.y + self.rad >= SCREEN_SIZE[1] or self.y <= self.rad:
             self.v_y = -self.v_y
         if self.x + self.rad >= SCREEN_SIZE[0] or self.x <= self.rad:
+            self.v_x = -self.v_x
+
+        if(self.x - self.rad <=  self.bar1.x + self.bar1.width and self.y >=  self.bar1.y and self.y <=  self.bar1.y +  self.bar1.height):
+            self.v_x = -self.v_x
+        if(self.x + self.rad >=  self.bar2.x and self.y >=  self.bar2.y and self.y <=  self.bar2.y +  self.bar2.height):
             self.v_x = -self.v_x
 
 
@@ -63,13 +71,13 @@ class Bar(object):
         if key[self.key_up]:
             print(self.y)
             if self.y > 0:
-                self.rect.move_ip(0, -1)
-                self.y -= 1
+                self.rect.move_ip(0, -5)
+                self.y -= 5
         if key[self.key_down]:
             print(self.y)
             if self.y < SCREEN_SIZE[1] - self.height:
-                self.rect.move_ip(0, 1)
-                self.y += 1
+                self.rect.move_ip(0, 5)
+                self.y += 5
 
 
 
@@ -91,10 +99,10 @@ def main():
 
     pg.display.set_caption(CAPTION)
     pg.display.set_mode(SCREEN_SIZE)
-    bar = Bar(10, 10, 20, 50,  pg.K_UP, pg.K_DOWN)
-    bar1 = Bar(570, 80, 20, 50, pg.K_a, pg.K_q)
+    bar1 = Bar(10, 10, 20, 150, pg.K_a, pg.K_q)
+    bar2 = Bar(570, 80, 20, 150, pg.K_UP, pg.K_DOWN)
     screen = pg.display.get_surface()
-    circle = Circle(screen, COLOR_KEY, 150, 50, 15,  3)
+    circle = Circle(screen, COLOR_KEY, 150, 50, 15,  3, bar1, bar2)
 
 
 
@@ -114,11 +122,11 @@ def main():
 
         screen.fill((255, 255, 255))
 
-        bar.draw(screen)
         bar1.draw(screen)
+        bar2.draw(screen)
         circle.drawcircle(screen)
-        bar.handle_keys()
         bar1.handle_keys()
+        bar2.handle_keys()
         pg.display.update()
         pg.display.update()
         clock.tick(40)
