@@ -1,13 +1,15 @@
 import os
 import sys
 import time
-
+import pygame.font
 import pygame as pg
 
 
-CAPTION = "4-Direction Movement with Animation"
+CAPTION = "tennis"
 SCREEN_SIZE = (600, 400)
-SCREEN_SIZE_1 = (300, 200)
+MENU_Y = 50
+score_right = 0
+score_left = 0
 
 BACKGROUND_COLOR = pg.Color("slategray")
 BAR_COLOR = pg.Color("red")
@@ -25,6 +27,8 @@ class Circle(object):
 
     v_x = 5
     v_y = 10
+    score_right = 0
+    score_left = 0
 
     def __init__(self, canvas, circleColor, x, y, rad, thickness, bar1, bar2):
         self.canvas = canvas
@@ -41,7 +45,7 @@ class Circle(object):
        # cercle = canvas.create_oval(x - rad, y - rad, x + rad, y + rad, width=0, fill=cercleColor)
         pg.draw.circle(screen, self.circleColor, (self.x, self.y), self.rad, self.thickness)
         print(self.x, self.y, self.y + self.rad, SCREEN_SIZE[1])
-        if self.y + self.rad >= SCREEN_SIZE[1] or self.y <= self.rad:
+        if self.y + self.rad >= SCREEN_SIZE[1] or self.y <= self.rad + MENU_Y:
             self.v_y = -self.v_y
         if self.x + self.rad >= SCREEN_SIZE[0] or self.x <= self.rad:
             self.v_x = -self.v_x
@@ -50,10 +54,15 @@ class Circle(object):
             self.v_x = -self.v_x
         if(self.x + self.rad >=  self.bar2.x and self.y >=  self.bar2.y and self.y <=  self.bar2.y +  self.bar2.height):
             self.v_x = -self.v_x
-        if(SCREEN_SIZE[0] - self.x <= self.rad or self.x <= self.rad):
+        if(SCREEN_SIZE[0] - self.x <= self.rad):#right
             self.v_x = 0
             self.v_y = 0
+            self.score_right +=1
 
+        if(self.x <= self.rad):#left
+            self.v_x = 0
+            self.v_y = 0
+            self.score_left =+ 1
 
         self.x += self.v_x
         self.y += self.v_y
@@ -76,7 +85,7 @@ class Bar(object):
 
         if key[self.key_up]:
             print(self.y)
-            if self.y > 0:
+            if self.y > 0 + MENU_Y:
                 self.rect.move_ip(0, -5)
                 self.y -= 5
         if key[self.key_down]:
@@ -112,11 +121,8 @@ def main():
     running = True
     pg.init()
 
-
-
     pg.display.set_caption(CAPTION)
     pg.display.set_mode(SCREEN_SIZE)
-
     bar1 = Bar(10, 10, 20, 150, pg.K_a, pg.K_q)
     bar2 = Bar(570, 80, 20, 150, pg.K_UP, pg.K_DOWN)
     screen = pg.display.get_surface()
@@ -124,10 +130,15 @@ def main():
 
     pg.font.init()  # you have to call this at the start,
     # if you want to use this module.
-    myfont = pg.font.SysFont('Comic Sans MS', 30)
+    basicfont = pygame.font.SysFont(None, 48)
+    text = basicfont.render(str(Circle.score_left) + '|' + str(Circle.score_right), True, (255, 0, 0), (255, 255, 255))
+    textrect = text.get_rect()
+    textrect.centerx = screen.get_rect().centerx
+    textrect.centery = screen.get_rect().centery
 
-#    screen.blit(bar.box_surface, (20, 10))
-
+    screen.fill((255, 255, 255))
+    screen.blit(text, textrect)
+    pg.draw.line(screen, (0, 225, 255), (20, 50), (20, 550))
     pg.display.update()
 
 
@@ -153,10 +164,15 @@ def main():
         circle.drawcircle(screen)
         bar1.handle_keys()
         bar2.handle_keys()
-        pg.display.update()
+        pg.draw.line(screen, (0, 225, 255), (0, 50), (600, 50))
+        pg.draw.line(screen, (0, 225, 255), (0, 51), (600, 51))
+        text = basicfont.render(str(circle.score_left) + '|' + str(circle.score_right), True, (255, 0, 0),
+                                (255, 255, 255))
+        screen.blit(text, textrect)
         pg.display.update()
         clock.tick(40)
-        text_to_screen(screen, '1|2', 50, 50)
+
+
 
 
     pg.quit()
