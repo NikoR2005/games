@@ -131,7 +131,7 @@ def main():
 
     pg.font.init()  # you have to call this at the start,
     # if you want to use this module.
-    basicfont = pygame.font.SysFont(None, 48)
+    basicfont = pygame.font.SysFont(None, 28)
     text = basicfont.render(str(Circle.score_left) + '|' + str(Circle.score_right), True, (0, 0, 0), (255, 255, 255))
     textrect = text.get_rect()
     textrect.centerx = screen.get_rect().centerx
@@ -164,10 +164,10 @@ def main():
         bar2.handle_keys()
         pg.draw.line(screen, (0, 225, 255), (0, 50), (600, 50))
         pg.draw.line(screen, (0, 225, 255), (0, 51), (600, 51))
-        text = basicfont.render(str(circle.score_left) + '|' + str(circle.score_right) + '   (press "R" to restart) ', True, (255, 0, 0), (255, 255, 255))
+        text = basicfont.render(str(circle.score_left) + '|' + str(circle.score_right) + '  (press "R" to restart) use "a" move up and "q" to move down ', True, (255, 0, 0), (255, 255, 255))
         textrect = text.get_rect()
         screen.blit(text, textrect)
-  #      computer_player(bar2, circle)
+        computer_player(bar2, circle)
         pg.display.update()
         clock.tick(40)
 
