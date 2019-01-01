@@ -80,6 +80,7 @@ class Bar(object):
         self.bar_size = (24, 96)
         self.rect = pg.rect.Rect((self.x, self.y, self.width, self.height))
 
+
     def handle_keys(self):
         key = pg.key.get_pressed()
 
@@ -100,7 +101,7 @@ class Bar(object):
         """
         Draws the player to the target surface.
         """
-        pg.draw.rect(screen, (0, 0, 128), self.rect)
+
 
 
 def text_to_screen(screen, text, x, y, size = 50,

@@ -1,22 +1,29 @@
-import pygame
+import pygame, sys
+from pygame.locals import *
 
-def text_to_screen(screen, text, x, y, size = 50,
-            color = (200, 000, 000), font_type = 'data/fonts/orecrusherexpand.ttf'):
-    try:
+pygame.init()
 
-        text = str(text)
-        font = pygame.font.Font(font_type, size)
-        text = font.render(text, True, color)
-        screen.blit(text, (x, y))
+pygame.display.set_caption('font example')
+size = [640, 480]
+screen = pygame.display.set_mode(size)
 
-    except Exception, e:
-        print 'Font Error, saw it coming'
-        raise \
+clock = pygame.time.Clock()
 
+basicfont = pygame.font.SysFont(None, 48)
+text = basicfont.render('Hello World!', True, (255, 0, 0), (255, 255, 255))
+textrect = text.get_rect()
+textrect.centerx = screen.get_rect().centerx
+textrect.centery = screen.get_rect().centery
 
+screen.fill((255, 255, 255))
+screen.blit(text, textrect)
 
-eFunk.text_to_screen(screen, 'Text {0}'.format(score), xpos, ypos)
+pygame.display.update()
 
+while True:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
 
-
-Funk.text_to_screen(screen, 'Text', xpos, ypos)
+    clock.tick(20)
