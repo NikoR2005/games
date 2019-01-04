@@ -28,10 +28,11 @@ myfont = pg.font.SysFont('Comic Sans MS', 30)
 
 class rectangle():
 
-    def __init__(self ,x ,y):
+    def __init__(self ,x ,y,color):
         self.x = x
         self.y = y
         self.rect1_size = (40, 80)
+        self.rectangle1Color = rectangle1Color
         self.rect2_size = (80, 80)
         self.rect3_size = (40, 40)
         self.rect4_size = ()
@@ -41,8 +42,7 @@ class rectangle():
     def rectangle1(self, screen):
         pg.draw.rect1(screen, rectangle1Color, self.rect1)
 
-def text_to_screen(screen, text, x, y, size = 50,
-            color = (225, 225, 225)):
+def text_to_screen(screen, text, x, y, size = 50,color = (225, 225, 225)):
     try:
 
         text = str(text)
@@ -56,21 +56,18 @@ def text_to_screen(screen, text, x, y, size = 50,
 def main():
     running = True
     pg.init()
-
+    screen = pg.display.get_surface()
     pg.display.set_caption(CAPTION)
     pg.display.set_mode(SCREEN_SIZE)
-    rect1 = rectangle()
-
+    pg.font.init()
     basicfont = pygame.font.SysFont(None, 48)
-    text = basicfont.render('Choose your Forms')
+    text = basicfont.render('CHOOSE'), True, (255, 0, 0), (255, 255, 255))
     textrect = text.get_rect()
-
-
-
-    running = True
-    screen = pg.display.get_surface()
-    pg.init()
     screen.fill((255, 255, 255))
+    screen.blit(text, textrect)
+
+
+    pg.init()
 
 
     pg.display.update()
