@@ -10,15 +10,9 @@ from tkinter import *
 CAPTION = "Tetris"
 SCREEN_SIZE = (1200, 1000)
 score = 0
-BACKGROUND_COLOR = pg.Color("red")
-YELLOW_COLOR = pg.Color("yellow")
-red = (255, 0, 0)
-rectangle1Color = (225, 0, 200)
-rectangle2Color = (0, 50, 225)
-rectangle3Color = (225, 225, 225)
-rectangle4Color = (1, 1, 1)
-rectangle5Color = (0, 225, 0)
-rectangle6Color = (125, 125, 125)
+YELLOW = pg.Color("yellow")
+RED = pg.Color("red")
+BLUE = pg.Color("blue")
 
 clock = pg.time.Clock()
 pg.font.init(),
@@ -28,31 +22,16 @@ myfont = pg.font.SysFont('Comic Sans MS', 30)
 
 class Rectangle():
 
-    def __init__(self, x, y, width, height, colour ):
+    def __init__(self, x, y, width, height, color=RED):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
-        self.colour = colour
-
-        # self.rectangle1Color = rectangle1Color
-        # self.rectangle2Color = rectangle2Color
-
+        self.color = color
         self.rect = pg.rect.Rect((self.x, self.y, self.width, self.height))
 
     def draw(self, screen):
-        pg.draw.rect(screen, (0, 0, 255), self.rect)
-
-    def draw1(self, screen):
-        pg.draw.rect(screen, (0, 255, 0), self.rect)
-
-    def draw2(self, screen):
-        pg.draw.rect(screen, (255, 0, 0), self.rect)
-
-    def draw3(self, screen):
-        pg.draw.rect(screen, YELLOW_COLOR, self.rect)
-
-
+        pg.draw.rect(screen, self.color, self.rect)
 
 
 def text_to_screen(screen, text, x, y, size=50, color=(225, 225, 225)):
@@ -75,7 +54,7 @@ class Circle(object):
         self.thickness = thickness
 
     def drawcircle(self, screen):
-        pg.draw.circle(screen, BACKGROUND_COLOR, (self.x, self.y), self.rad, self.thickness)
+        pg.draw.circle(screen, RED, (self.x, self.y), self.rad, self.thickness)
 
 
 def main():
@@ -85,8 +64,8 @@ def main():
     pg.display.set_caption(CAPTION)
     pg.display.set_mode(SCREEN_SIZE)
     pg.font.init()
-    form1_1 = Rectangle(80, 80, 80, 80)
-    form1_2 = Rectangle(80, 160, 80, 80)
+    form1_1 = Rectangle(80, 80, 80, 80, RED)
+    form1_2 = Rectangle(80, 160, 80, 80, YELLOW)
     form1_3 = Rectangle(80, 240, 80, 80)
     form2_1 = Rectangle(320, 80, 80, 80)
     form2_2 = Rectangle(320, 160, 80, 80)
@@ -101,10 +80,10 @@ def main():
     form4_3 = Rectangle(320, 480, 80, 80)
     form4_4 = Rectangle(400, 480, 80, 80)
     form11 = Rectangle(780, 40, 40, 40)
-    circle1 = Circle(BACKGROUND_COLOR, 65, 200, 10, 2)
-    circle2 = Circle(BACKGROUND_COLOR, 65, 520, 10, 2)
-    circle3 = Circle(BACKGROUND_COLOR, 305, 200, 10, 2)
-    circle4 = Circle(BACKGROUND_COLOR, 305, 520, 10, 2)
+    circle1 = Circle(RED, 65, 200, 10, 2)
+    circle2 = Circle(RED, 65, 520, 10, 2)
+    circle3 = Circle(RED, 305, 200, 10, 2)
+    circle4 = Circle(RED, 305, 520, 10, 2)
 
     basicfont = pygame.font.SysFont(None, 60)
     text = basicfont.render('         Choose your forms.                     Press SPACE start.', True, (55, 0, 0),
@@ -112,57 +91,48 @@ def main():
     textrect = text.get_rect()
     screen = pg.display.get_surface()
 
-    #create the grid for tetris shapes
+    # create the grid for tetris shapes
     grid = []
-    for k in range (12):
+    for k in range(12):
         row = []
         for i in range(8):
-            cell = (740 + i * 40, 40 + k*40,red)
+            cell = (740 + i * 40, 40 + k * 40, RED, (k, i))
             row.append(cell)
         grid.append(row)
     print(grid)
+    states = [(0, 0), (0, 1), (0, 2), (1,1)]
 
 
     while running:
         screen.fill((255, 255, 255))
         screen.blit(text, textrect)
-
         pg.draw.line(screen, (0, 0, 255), (0, 40), (1200, 40))
         pg.draw.line(screen, (0, 0, 255), (0, 0), (1200, 0))
         pg.draw.line(screen, (255, 0, 255), (740, 40), (740, 1000))
         pg.draw.line(screen, (255, 0, 255), (1060, 40), (1060, 1000))
         pg.draw.line(screen, (0, 0, 255), (600, 0), (600, 1000))
         pg.draw.line(screen, (0, 0, 255), (600, 0), (600, 1000))
-        pg.draw.line(screen, (0, 0, 150), (1020, 40), (1020, 1000))
-        pg.draw.line(screen, (0, 0, 150), (980, 40), (980, 1000))
-        pg.draw.line(screen, (0, 0, 150), (940, 40), (940, 1000))
-        pg.draw.line(screen, (0, 0, 150), (900, 40), (900, 1000))
-        pg.draw.line(screen, (0, 0, 150), (860, 40), (860, 1000))
-        pg.draw.line(screen, (0, 0, 150), (820, 40), (820, 1000))
-        pg.draw.line(screen, (0, 0, 150), (780, 40), (780, 1000))
         form1_1.draw(screen)
         form1_2.draw(screen)
         form1_3.draw(screen)
-        form2_1.draw1(screen)
-        form2_2.draw1(screen)
-        form2_3.draw1(screen)
-        form2_4.draw1(screen)
-        form3_1.draw2(screen)
-        form3_2.draw2(screen)
-        form3_3.draw2(screen)
-        form3_4.draw2(screen)
-        form4_1.draw3(screen)
-        form4_2.draw3(screen)
-        form4_3.draw3(screen)
-        form4_4.draw3(screen)
+        form2_1.draw(screen)
+        form2_2.draw(screen)
+        form2_3.draw(screen)
+        form2_4.draw(screen)
+        form3_1.draw(screen)
+        form3_2.draw(screen)
+        form3_3.draw(screen)
+        form3_4.draw(screen)
+        form4_1.draw(screen)
+        form4_2.draw(screen)
+        form4_3.draw(screen)
+        form4_4.draw(screen)
         circle1.drawcircle(screen)
         circle2.drawcircle(screen)
         circle3.drawcircle(screen)
         circle4.drawcircle(screen)
-        form11.draw(screen)
 
         ev = pygame.event.get()
-
         for event in ev:
 
             if event.type == pygame.MOUSEBUTTONUP:
@@ -198,17 +168,23 @@ def main():
                         circle4.thickness = 2
                     else:
                         circle4.thickness = 10
+
         for row in grid:
             for cell in row:
-                rect = Rectangle(cell[0], cell[1], 40, 40)
-                rect.draw1(screen)
-#                pg.draw.rect(cell[0], cell[1], cell[2])
+                if cell[3] in states:
+                    rect = Rectangle(cell[0], cell[1], 40, 40, YELLOW)
+                else:
+                    rect = Rectangle(cell[0], cell[1], 40, 40, cell[2])
+                rect.draw(screen)
+
         pg.display.update()
+        clock.tick(5)
+        next_states = []
+        for state in states:
+            state = (state[0] + 1, state[1])
+            next_states.append(state)
 
-        clock.tick(40)
-
+        states = next_states
 
 if __name__ == "__main__":
     main()
-
-
