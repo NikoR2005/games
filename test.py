@@ -15,7 +15,7 @@ RED = pg.Color("red")
 BLUE = pg.Color("blue")
 
 clock = pg.time.Clock()
-pg.font.init(),
+pg.font.init()
 
 myfont = pg.font.SysFont('Comic Sans MS', 30)
 
@@ -100,8 +100,9 @@ def main():
             row.append(cell)
         grid.append(row)
     print(grid)
-    states = [(0, 0), (0, 1), (0, 2), (1,1)]
-
+    v = 0
+    fall_states = [(v, 7), (v + 1, 6), (v, 6), (v, 5)]
+    fix_states = []
 
     while running:
         screen.fill((255, 255, 255))
@@ -171,20 +172,25 @@ def main():
 
         for row in grid:
             for cell in row:
-                if cell[3] in states:
+                if cell[3] in fall_states or cell[3] in fix_states:
                     rect = Rectangle(cell[0], cell[1], 40, 40, YELLOW)
                 else:
                     rect = Rectangle(cell[0], cell[1], 40, 40, cell[2])
                 rect.draw(screen)
 
+
         pg.display.update()
         clock.tick(5)
+
         next_states = []
-        for state in states:
+        for state in fall_states:
+            if state[0] == 11:
+                fix_states.extend(fall_states)
+                break
             state = (state[0] + 1, state[1])
             next_states.append(state)
 
-        states = next_states
+        fall_states = next_states
 
 if __name__ == "__main__":
     main()
