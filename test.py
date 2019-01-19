@@ -79,7 +79,6 @@ def main():
     form4_2 = Rectangle(400, 400, 80, 80)
     form4_3 = Rectangle(320, 480, 80, 80)
     form4_4 = Rectangle(400, 480, 80, 80)
-    form11 = Rectangle(780, 40, 40, 40)
     circle1 = Circle(RED, 65, 200, 10, 2)
     circle2 = Circle(RED, 65, 520, 10, 2)
     circle3 = Circle(RED, 305, 200, 10, 2)
@@ -93,15 +92,15 @@ def main():
 
     # create the grid for tetris shapes
     grid = []
-    for k in range(12):
+    for k in range(14):
         row = []
-        for i in range(8):
+        for i in range(9):
             cell = (740 + i * 40, 40 + k * 40, RED, (k, i))
             row.append(cell)
         grid.append(row)
     print(grid)
-    v = 0
-    fall_states = [(v, 7), (v + 1, 6), (v, 6), (v, 5)]
+
+    fall_states = [(0, 5), (0 + 1, 6), (0, 7), (0, 6)]
     fix_states = []
 
     while running:
@@ -179,9 +178,6 @@ def main():
                 rect.draw(screen)
 
 
-        pg.display.update()
-        clock.tick(5)
-
         next_states = []
         for state in fall_states:
             if state[0] == 11:
@@ -191,6 +187,9 @@ def main():
             next_states.append(state)
 
         fall_states = next_states
+
+        pg.display.update()
+        clock.tick(10)
 
 if __name__ == "__main__":
     main()
