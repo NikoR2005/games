@@ -25,7 +25,7 @@ rectangle6Color = (125, 125, 125)
 
 
 clock = pg.time.Clock()
-pg.font.init(),
+pg.font.init()
 
 myfont = pg.font.SysFont('Comic Sans MS', 30)
 
