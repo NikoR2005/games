@@ -6,6 +6,7 @@ import pygame as pg
 from random import randrange
 
 
+
 CAPTION = "tennis"
 SCREEN_SIZE = (600, 400)
 MENU_Y = 50
@@ -74,13 +75,13 @@ class Circle(object):
 
 class Bar(object):
 
-    def __init__(self, x, y, width, height, key_up, key_down):
+    def __init__(self, x, y, width, height, key_up, key_own):
         self.x = x
         self.y = y
         self.width = width
         self.height= height
         self.key_up = key_up
-        self.key_down = key_down
+        self.key_own = key_own
         self.move_up = False
         self.move_down = False
 
@@ -95,7 +96,7 @@ class Bar(object):
                 self.rect.move_ip(0, -5)
                 self.y -= 5
                 self.move_up = False
-        if key[self.key_down] or self.move_down:
+        if key[self.key_own] or self.move_down:
             if self.y < SCREEN_SIZE[1] - self.height:
                 self.rect.move_ip(0, 5)
                 self.y += 5
@@ -105,6 +106,7 @@ class Bar(object):
         """
         Draws the player to the target surface.
         """
+        pg.draw.rect(screen, (0, 0, 128), self.rect)
 
 
 
@@ -116,9 +118,7 @@ def computer_player(bar, circle):
 
 
 def main():
-    """
-    Prepare our environment, create a display, and start the program.
-    """
+
     running = True
     pg.init()
 
@@ -127,7 +127,7 @@ def main():
     bar1 = Bar(10, 80, 20, 100, pg.K_q, pg.K_a)
     bar2 = Bar(570, 80, 20, 150, pg.K_UP, pg.K_DOWN)
     screen = pg.display.get_surface()
-    circle = Circle(screen, COLOR_KEY, 150, 80, 15,  3, bar1, bar2)
+    circle = Circle(screen, COLOR_KEY, 150, 80, 15,  1, bar1, bar2)
 
     pg.font.init()  # you have to call this at the start,
     # if you want to use this module.
@@ -136,7 +136,7 @@ def main():
     textrect = text.get_rect()
     textrect.centerx = screen.get_rect().centerx
     textrect.centery = 50
-    screen.fill((255, 255, 255))
+
     pg.draw.line(screen, (0, 225, 255), (20, 50), (20, 550))
     pg.display.update()
 
