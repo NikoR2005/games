@@ -129,8 +129,23 @@ def main():
     fall_states = [(0, 5), (0 + 1, 6), (0, 7), (0, 6)]
     fix_states = []
 
+    circles = draw_screen(screen)
     while running:
-        circles = draw_screen(screen)
+
+        ev = pygame.event.get()
+        for event in ev:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                for circle in circles:
+                    if circle.x - circle.rad < pos[0] and pos[0] < circle.x + circle.rad and circle.y - circle.rad < pos[1] and pos[1] < circle.y + circle.rad:
+                        if circle.thickness == 10:
+                            circle.thickness = 2
+                            circle.circleColor = BLUE
+                            circle.drawcircle(screen)
+                        else:
+                            circle.thickness = 10
+                            circle.circleColor = YELLOW
+                            circle.drawcircle(screen)
 
         for row in grid:
             for cell in row:
@@ -151,20 +166,11 @@ def main():
         if state[0] == 15:
             fix_states.extend(fall_states)
             print('ok')
-            break
+        #    if state[0] == 15:
+          #      state[0] = 0
 
 
-        ev = pygame.event.get()
-        for event in ev:
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                pos = pygame.mouse.get_pos()
-                for circle in circles:
-                    if circle.x - circle.rad < pos[0] and pos[0] < circle.x + circle.rad \
-                            and circle.y - circle.rad < pos[1] and pos[1] < circle.y + circle.rad:
-                        if circle.thickness == 10:
-                            circle.thickness = 2
-                        else:
-                            circle.thickness = 10
+
 
         pg.display.update()
         clock.tick(10)
