@@ -13,6 +13,7 @@ score = 0
 YELLOW = pg.Color("yellow")
 RED = pg.Color("red")
 BLUE = pg.Color("blue")
+BLACK = pg.Color("black")
 
 clock = pg.time.Clock()
 pg.font.init()
@@ -73,10 +74,10 @@ def draw_screen(screen):
     form4_2 = Rectangle(400, 400, 80, 80)
     form4_3 = Rectangle(320, 480, 80, 80)
     form4_4 = Rectangle(400, 480, 80, 80)
-    circle1 = Circle(RED, 65, 200, 10, 2)
-    circle2 = Circle(RED, 65, 520, 10, 2)
-    circle3 = Circle(RED, 305, 200, 10, 2)
-    circle4 = Circle(RED, 305, 520, 10, 2)
+    circle1 = Circle(RED, 65, 200, 10, 10)
+    circle2 = Circle(RED, 65, 520, 10, 10)
+    circle3 = Circle(RED, 305, 200, 10, 10)
+    circle4 = Circle(RED, 305, 520, 10, 10)
     pg.draw.line(screen, (0, 0, 255), (0, 40), (1200, 40))
     pg.draw.line(screen, (0, 0, 255), (0, 0), (1200, 0))
     pg.draw.line(screen, (255, 0, 255), (740, 40), (740, 1000))
@@ -108,11 +109,12 @@ def main():
     running = True
     pg.init()
     pg.display.set_caption(CAPTION)
-    pg.display.set_mode(SCREEN_SIZE)
+    dsp = pg.display.set_mode(SCREEN_SIZE)
     pg.font.init()
     basicfont = pygame.font.SysFont(None, 60)
     text = basicfont.render('         Choose your forms.                     Press SPACE start.', True, (55, 0, 0),
                             (0, 255, 255))
+
     textrect = text.get_rect()
     screen = pg.display.get_surface()
 
@@ -138,14 +140,12 @@ def main():
                 pos = pygame.mouse.get_pos()
                 for circle in circles:
                     if circle.x - circle.rad < pos[0] and pos[0] < circle.x + circle.rad and circle.y - circle.rad < pos[1] and pos[1] < circle.y + circle.rad:
+                        pg.draw.circle(screen, YELLOW, (circle.x, circle.y), circle.rad, circle.thickness)
                         if circle.thickness == 10:
                             circle.thickness = 2
-                            circle.circleColor = BLUE
-                            circle.drawcircle(screen)
                         else:
                             circle.thickness = 10
-                            circle.circleColor = YELLOW
-                            circle.drawcircle(screen)
+                        circle.drawcircle(screen)
 
         for row in grid:
             for cell in row:
@@ -165,15 +165,9 @@ def main():
         fall_states = next_states
         if state[0] == 15:
             fix_states.extend(fall_states)
-            print('ok')
-        #    if state[0] == 15:
-          #      state[0] = 0
-
-
-
 
         pg.display.update()
-        clock.tick(10)
+        clock.tick(3)
 
 if __name__ == "__main__":
     main()
