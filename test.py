@@ -1,25 +1,19 @@
-import os
-import sys
-import time
 import pygame.font
 import pygame as pg
 from turtle import *
 from pygame.locals import *
-from tkinter import *
 
 CAPTION = "Tetris"
 SCREEN_SIZE = (1200, 1000)
+SQUARE_SIZE = 10
 score = 0
 
 YELLOW = pg.Color("yellow")
 RED = pg.Color("red")
 BLUE = pg.Color("blue")
 BLACK = pg.Color("black")
-
 clock = pg.time.Clock()
 pg.font.init()
-
-
 myfont = pg.font.SysFont('maison Sans MS', 30)
 
 cube = [[[0, 0], [0, 1], [1, 0], [1, 1]],
@@ -27,31 +21,30 @@ cube = [[[0, 0], [0, 1], [1, 0], [1, 1]],
        [[0, 0], [0, 1], [1, 0], [1, 1]],
        [[0, 0], [0, 1], [1, 0], [1, 1]]]
 
-line = [[[0, 0], [0, 1], [0, 2], [1, 2]],
-       [[0, 0], [0, 1], [0, 2], [1, 2]],
-       [[0, 0], [0, 1], [0, 2], [1, 2]],
-       [[0, 0], [0, 1], [0, 2], [1, 2]]]
+line = [[[0, 0], [0, 1], [0, 2]],
+       [[0, 0], [1, 0], [2, 0]],
+       [[0, 0], [0, 1], [0, 2]],
+       [[0, 0], [0, 1], [0, 2]]]
 pyramide = [[[0, 0], [0, 1], [0, 2], [1, 1]],
-       [[0, 0], [1, 0], [2, 0], [1, 1]],
-       [[0, 1], [1, 0], [1, 1], [1, 2]],
-       [[0, 0], [0, 1], [0, 2], [1, 2]]]
+            [[0, 0], [1, 0], [2, 0], [1, 1]],
+            [[0, 0], [0, 1], [0, 2], [1, 1]],
+            [[0, 0], [1, 0], [2, 0], [1, 1]]]
 angle = [[[0, 0], [0, 1], [0, 2], [1, 0]],
-             [[0, 0], [1, 0], [2, 0], [2, 1]],
-             [[1, 0], [1, 1], [1, 2], [2, 0]],
-             [[0, 0], [0, 1], [0, 2], [1, 2]]]
+         [[0, 0], [1, 0], [2, 0], [2, 1]],
+         [[1, 0], [1, 1], [1, 2], [2, 0]],
+         [[0, 0], [0, 1], [0, 2], [1, 2]]]
 
 shapes = [cube, line, pyramide, angle]
 
 
-class Rectangle(object):
+class Square(object):
 
-    def __init__(self, x, y, width, height, color = RED):
+    def __init__(self, x, y, size, color = RED):
         self.x = x
         self.y = y
-        self.width = width
-        self.height = height
+        self.size = size
         self.color = color
-        self.rect = pg.rect.Rect((self.x, self.y, self.width, self.height))
+        self.rect = pg.rect.Rect((self.x, self.y, self.size, self.size))
 
     def draw(self, screen):
         pg.draw.rect(screen, self.color, self.rect)
@@ -70,26 +63,35 @@ class Circle(object):
 
 
 class Shape(object):
-    def __init__(self, states, select_color):
+    def __init__(self, x, y, square_size, states, color):
         self.states = states
-        self.color = select_color
-
-        self.state = states[0]
+        self.select_color = color
+        self.index = 0
+        self.state = states[self.index]
+        self.x = x
+        self.y = y
+        self.square_size = square_size
 
 
     def rotate(self):
-        pass
+        if self.index == 3:
+            self.index = 0
+        else:
+            self.index = self.index + 1
+        self.state = self.states[self.index]
 
     def can_move(self,  fix_states):
         pass
 
     def fall(self):
-        return self.state
+        pass
 
-    def draw(self, init_x, init_y, square_size, screen):
+    def draw(self, screen):
         for coordinates in self.state:
-            rect = Rectangle(init_x + coordinates[0] * square_size, init_y + coordinates[1] * square_size, square_size, square_size, self.color)
+            x, y = self.x + coordinates[0] * self.square_size, self.y + coordinates[1] * self.square_size
+            rect = Square(x, y, self.square_size, self.select_color)
             rect.draw(screen)
+
 
 def text_to_screen(screen, text, x, y, size=50, color=(2, 2, 25)):
     try:
@@ -101,23 +103,9 @@ def text_to_screen(screen, text, x, y, size=50, color=(2, 2, 25)):
     except:
         print('Font Error, saw it coming')
 
+
 def draw_screen_not_used(screen):
-    cube_shape = Shape(cube, RED)
-    cube_shape.draw(80, 80, 80, screen)
-    line_shape = Shape(line, YELLOW)
-    line_shape.draw(80, 240, 80, screen)
-    form2_1 = Rectangle(320, 80, 80, 80)
-    form2_2 = Rectangle(320, 160, 80, 80)
-    form2_3 = Rectangle(320, 240, 80, 80)
-    form2_4 = Rectangle(400, 240, 80, 80)
-    form3_1 = Rectangle(80, 480, 80, 80)
-    form3_2 = Rectangle(160, 480, 80, 80)
-    form3_3 = Rectangle(80, 400, 80, 80)
-    form3_4 = Rectangle(80, 560, 80, 80)
-    form4_1 = Rectangle(320, 400, 80, 80)
-    form4_2 = Rectangle(400, 400, 80, 80)
-    form4_3 = Rectangle(320, 480, 80, 80)
-    form4_4 = Rectangle(400, 480, 80, 80)
+
     circle1 = Circle(RED, 65, 200, 10, 10)
     circle2 = Circle(RED, 65, 520, 10, 10)
     circle3 = Circle(RED, 305, 200, 10, 10)
@@ -128,23 +116,24 @@ def draw_screen_not_used(screen):
     pg.draw.line(screen, (255, 0, 255), (1060, 40), (1060, 1000))
     pg.draw.line(screen, (0, 0, 255), (600, 0), (600, 1000))
     pg.draw.line(screen, (0, 0, 255), (600, 0), (600, 1000))
-    form2_1.draw(screen)
-    form2_2.draw(screen)
-    form2_3.draw(screen)
-    form2_4.draw(screen)
-    form3_1.draw(screen)
-    form3_2.draw(screen)
-    form3_3.draw(screen)
-    form3_4.draw(screen)
-    form4_1.draw(screen)
-    form4_2.draw(screen)
-    form4_3.draw(screen)
-    form4_4.draw(screen)
+
     circle1.drawcircle(screen)
     circle2.drawcircle(screen)
     circle3.drawcircle(screen)
     circle4.drawcircle(screen)
     return [circle1, circle2, circle3, circle4]
+
+def draw_shapes(screen):
+    cube_shape = Shape(80, 80, SQUARE_SIZE, cube, RED)
+    cube_shape.draw(screen)
+    pyramide_shape = Shape(80, 400, SQUARE_SIZE, pyramide, YELLOW)
+    pyramide_shape.draw(screen)
+    angle_shape = Shape(320, 400, SQUARE_SIZE, angle, BLUE)
+    angle_shape.draw(screen)
+    line_shape = Shape(320, 80, SQUARE_SIZE, line, YELLOW)
+    line_shape.draw(screen)
+    return [cube_shape, pyramide_shape, angle_shape, line_shape]
+
 
 def main():
     running = True
@@ -169,17 +158,23 @@ def main():
 
     fix_states = []
 
-
     circles = draw_screen_not_used(screen)
+    shapes = draw_shapes(screen)
+
     while running:
-        shape = Shape(cube[0], RED)
-        state = shape.fall()
+
+        keys = pygame.key.get_pressed()
+        if keys[K_SPACE]:
+            for shape in shapes:
+                shape.rotate()
+                shape.draw(screen)
+
         for row in grid:
             for cell in row:
                 if cell[3] in cube or cell[3] in fix_states:
-                    rect = Rectangle(cell[0], cell[1], 40, 40, YELLOW)
+                    rect = Square(cell[0], cell[1], 40, YELLOW)
                 else:
-                    rect = Rectangle(cell[0], cell[1], 40, 40, cell[2])
+                    rect = Square(cell[0], cell[1], 40, cell[2])
                 rect.draw(screen)
 
         next_states = []
@@ -190,10 +185,11 @@ def main():
         if state[0] == 15:
             fix_states.extend(cube[0])
 
-        ev = pygame.event.get()
-        for event in ev:
+        evt = pygame.event.get()
+        for event in evt:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = pygame.mouse.get_pos()
+
                 for circle in circles:
                     if circle.x - circle.rad < pos[0] and pos[0] < circle.x + \
                             circle.rad and circle.y - circle.rad < pos[1] and pos[1] < circle.y + circle.rad:
