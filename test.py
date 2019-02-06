@@ -2,11 +2,11 @@ import pygame.font
 import pygame as pg
 from turtle import *
 from pygame.locals import *
-import time
+import random
 
 CAPTION = "Tetris"
 SCREEN_SIZE = (1200, 1000)
-SQUARE_SIZE = 80
+SQUARE_SIZE = 40
 BOX_COORDS = (740, 40)
 BOX_HEIGHT = 20
 BOX_WIDTH = 8
@@ -17,6 +17,7 @@ YELLOW = pg.Color("yellow")
 RED = pg.Color("red")
 BLUE = pg.Color("blue")
 BLACK = pg.Color("black")
+WHITE = pg.Color("white")
 clock = pg.time.Clock()
 pg.font.init()
 myfont = pg.font.SysFont('maison Sans MS', 30)
@@ -40,7 +41,7 @@ angle = [[[0, 0], [0, 1], [0, 2], [1, 0]],
          [[2, 2], [2, 1], [2, 0], [1, 2]],
          [[0, 1], [0, 2], [2, 2], [1, 2]]]
 
-shapes = [cube, line, pyramide, angle]
+shapes_structure = [cube, line, pyramide, angle]
 
 
 class Square(object):
@@ -57,15 +58,31 @@ class Square(object):
 
 
 class Circle(object):
-    def __init__(self, circleColor, x, y, rad, thickness):
+    def __init__(self, circle_color, x, y, rad, thickness, shape=None):
         self.x = x
         self.y = y
         self.rad = rad
-        self.circleColor = circleColor
+        self.circleColor = circle_color
         self.thickness = thickness
+        self.shape = shape
 
     def drawcircle(self, screen):
         pg.draw.circle(screen, RED, (self.x, self.y), self.rad, self.thickness)
+        shape = Shape(self.x + 20, self.y, SQUARE_SIZE, self.shape, BLUE, WHITE)
+        shape.draw(screen, True)
+
+
+class Circlestart(object):
+    def __init__(self, circle_color, x, y, rad, thickness):
+        self.x = x
+        self.y = y
+        self.rad = rad
+        self.circleColor = circle_color
+        self.thickness = thickness
+
+    def drawstart_circle(self, screen):
+        pg.draw.circle(screen, RED, (self.x, self.y), self.rad, self.thickness)
+
 
 
 class Shape(object):
@@ -78,6 +95,7 @@ class Shape(object):
         self.x = x
         self.y = y
         self.square_size = square_size
+        self.count = 0
 
     def rotate(self, screen):
         if self.index == 3:
@@ -87,16 +105,21 @@ class Shape(object):
         self.state = self.states[self.index]
 
     def can_move(self, fix_states):
-        return True
+        if self.count < BOX_HEIGHT:
+            self.count += 1
+            return True
+        else:
+            self.count = 0
+            return False
 
     def fall(self, fix_states):
         if self.can_move(fix_states):
             for cell in self.state:
                 cell[1] = cell[1] + 1
 
-    def draw(self, screen, remove):
+    def draw(self, screen, show):
         current_color = self.select_color
-        if remove:
+        if not show:
             current_color = self.delete_color
         for coordinates in self.state:
             x, y = self.x + coordinates[0] * self.square_size, self.y + coordinates[1] * self.square_size
@@ -114,12 +137,13 @@ def text_to_screen(screen, text, x, y, size=50, color=(2, 2, 25)):
         print('Font Error, saw it coming')
 
 
-def draw_screen_not_used(screen):
+def draw_circles(screen):
 
-    circle1 = Circle(RED, 65, 200, 10, 10)
-    circle2 = Circle(RED, 65, 520, 10, 10)
-    circle3 = Circle(RED, 305, 200, 10, 10)
-    circle4 = Circle(RED, 305, 520, 10, 10)
+    circle1 = Circle(RED, 65, 200, 10, 10, cube)
+    circle2 = Circle(RED, 65, 520, 10, 10, pyramide)
+    circle3 = Circle(RED, 305, 200, 10, 10, angle)
+    circle4 = Circle(RED, 305, 520, 10, 10, line)
+
     pg.draw.line(screen, (0, 0, 255), (0, 40), (1200, 40))
     pg.draw.line(screen, (0, 0, 255), (0, 0), (1200, 0))
     pg.draw.line(screen, (255, 0, 255), (740, 40), (740, 1000))
@@ -131,19 +155,12 @@ def draw_screen_not_used(screen):
     circle2.drawcircle(screen)
     circle3.drawcircle(screen)
     circle4.drawcircle(screen)
+
     return [circle1, circle2, circle3, circle4]
-
-
-def draw_shapes(screen):
-    cube_shape = Shape(80, 80, SQUARE_SIZE, cube, RED, BLACK)
-    cube_shape.draw(screen, False)
-    pyramide_shape = Shape(80, 400, SQUARE_SIZE, pyramide, YELLOW, BLACK)
-    pyramide_shape.draw(screen, False)
-    angle_shape = Shape(320, 400, SQUARE_SIZE, angle, BLUE, BLACK)
-    angle_shape.draw(screen, False)
-    line_shape = Shape(320, 80, SQUARE_SIZE, line, YELLOW, BLACK)
-    line_shape.draw(screen, False)
-    return [cube_shape, pyramide_shape, angle_shape, line_shape]
+def start_circle(screen):
+    circle_start = Circlestart(WHITE, 250, 800, 150, 10)
+    circle_start.drawstart_circle(screen)
+    return [circle_start]
 
 
 def main():
@@ -154,7 +171,7 @@ def main():
     pg.font.init()
     basicfont = pygame.font.SysFont(None, 60)
     text = basicfont.render('         Choose your forms.                     Press SPACE start.', True, (55, 0, 0), (0, 255, 255))
-
+    text1 = basicfont.render('Start', True, (55, 0, 0), (0, 255, 255))
     textrect = text.get_rect()
     screen = pg.display.get_surface()
 
@@ -164,30 +181,35 @@ def main():
         for i in range(BOX_WIDTH):
             cell = (BOX_COORDS[0] + i * BOX_COORDS[1], BOX_COORDS[1] + k * SQUARE_SIZE, RED, (k, i))
             row.append(cell)
-        grid.append(row)
-
-    fix_states = []v
-    circles = draw_screen_not_used(screen)
-    shapes = draw_shapes(screen)
-
-    while running:
-        for cell in grid:
             sq = Square(cell[0], cell[1], SQUARE_SIZE)
             sq.draw(screen)
+        grid.append(row)
+
+    fix_states = []
+    circles = draw_circles(screen)
+    circle_start = start_circle(screen)
+    is_shape_moving = False
+    shape = None
+
+    while running:
+
+        if not is_shape_moving:
+            states = shapes_structure[random.randint(0, 3)]
+            shape = Shape(BOX_COORDS[0], BOX_COORDS[1], SQUARE_SIZE, states, YELLOW, RED)
+
+        if shape.can_move(fix_states):
+            is_shape_moving = True
+            shape.draw(screen, False)
+            shape.fall(fix_states)
+            shape.draw(screen, True)
+        else:
+            is_shape_moving = False
         keys = pygame.key.get_pressed()
-        if keys[K_SPACE]:
-            for shape in shapes:
-                shape.draw(screen, True)
-                shape.rotate(screen)
+        if keys[K_SPACE] and is_shape_moving:
                 shape.draw(screen, False)
+                shape.rotate(screen)
+                shape.draw(screen, True)
 
-        next_states = []
-        for state in cube[0]:
-            state = [state[0] + 1, state[1]]
-            next_states.append(state)
-
-        if state[0] == 15:
-            fix_states.extend(cube[0])
 
         evt = pygame.event.get()
         for event in evt:
@@ -199,9 +221,20 @@ def main():
                         pg.draw.circle(screen, YELLOW, (circle.x, circle.y), circle.rad, circle.thickness)
                         if circle.thickness == 10:
                             circle.thickness = 2
+
                         else:
                             circle.thickness = 10
                         circle.drawcircle(screen)
+
+                for circle in circle_start:
+                    if circle.x - circle.rad < pos[0] and pos[0] < circle.x + circle.rad and circle.y - circle.rad < pos[1] and pos[1] < circle.y + circle.rad:
+                        pg.draw.circle(screen, YELLOW, (circle.x, circle.y), circle.rad, circle.thickness)
+                        if circle.thickness == 50:
+                            circle.thickness = 2
+
+                        else:
+                            circle.thickness = 150
+                        circle.drawstart_circle(screen)
 
         pg.display.update()
         clock.tick(10)
@@ -209,3 +242,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+'''
+
+if circle1.thickness == 10:
+        shapes_structure.append[cube]'''
