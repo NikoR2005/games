@@ -212,9 +212,6 @@ def main():
                                 selected_shapes.remove(circle.shape)
                         circle.drawcircle(screen)
 
-                if evt.key == pygame.MOUSEBUTTONUP:
-                    print('mmkuffykfkufkuhkrrrr')
-
                 if selected_circles(circles) and not start_pressed:
                     pg.draw.circle(screen, GREEN, (start_circle.x, start_circle.y), start_circle.rad, start_circle.thickness)
                     start_circle.thickness = 1
@@ -229,6 +226,9 @@ def main():
                     start_circle.drawcircle(screen)
                     text_to_screen(screen, 'Choose your forms', start_circle.x - 100, start_circle.y, 500, BLACK)
 
+            if event.type == pygame.K_r:
+                print('mmkuffykfkufkuhkrrrr')
+
         if start_pressed and not shape:
             shape_structure = copy.deepcopy(selected_shapes[random.randint(0, len(selected_shapes) - 1)])
             shape = Shape(BOX_COORDS[0], BOX_COORDS[1], SQUARE_SIZE, shape_structure, YELLOW, RED)
@@ -241,8 +241,7 @@ def main():
             print('keep drawing shape...')
         else:
             shape = None
-        print(selected_shapes)
-        print('---------')
+
         pg.display.update()
         clock.tick(10)
 
