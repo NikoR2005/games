@@ -24,11 +24,10 @@ clock = pg.time.Clock()
 pg.font.init()
 my_font = pg.font.SysFont('maison Sans MS', 30)
 
-
 cube = [[[0, 0], [0, 1], [1, 0], [1, 1]],
-       [[0, 0], [0, 1], [1, 0], [1, 1]],
-       [[0, 0], [0, 1], [1, 0], [1, 1]],
-       [[0, 0], [0, 1], [1, 0], [1, 1]]]
+        [[0, 0], [0, 1], [1, 0], [1, 1]],
+        [[0, 0], [0, 1], [1, 0], [1, 1]],
+        [[0, 0], [0, 1], [1, 0], [1, 1]]]
 
 line = [[[0, 0], [0, 1], [0, 2]],
         [[0, 0], [1, 0], [2, 0]],
@@ -87,29 +86,47 @@ class Shape(object):
         self.y = y
         self.square_size = square_size
 
-    def rotate(self, screen):
+    def rotate(self):
         if self.index == 3:
             self.index = 0
         else:
             self.index = self.index + 1
         self.state = self.states[self.index]
 
-    def can_move(self, fix_states):
-        result = True
+    def can_move_left(self, fix_states):
+        for coordinates in self.state:
+            if coordinates[0] == 0:
+                return False
+            for fix_coordinates in fix_states:
+                if fix_coordinates[0] == coordinates[0] - 1:
+                    return False
+        return True
+
+    def can_move_right(self, fix_states):
         for coordinates in self.state:
             if coordinates[0] == BOX_WIDTH:
-                result = False
-            if coordinates[0] == BOX_WIDTH - 9:
-                result = False
-        return result
+                return False
+            for fix_coordinates in fix_states:
+                if fix_coordinates[0] == coordinates[0] + 1:
+                    return False
+        return True
 
-    def move_side(self, moving_right, fix_states):
+    def can_fall(self, fix_states):
+        for coordinates in self.state:
+            if coordinates[1] == BOX_HEIGHT - 1:
+                return False
+            for fix_coordinates in fix_states:
+                if fix_coordinates[1] == coordinates[1] - 1:
+                    return False
+        return True
+
+    def move_side(self, moving_right):
         increment = 1 if moving_right else -1
         for state in self.states:
             for cell in state:
                 cell[0] = cell[0] + increment
 
-    def fall(self, fix_states):
+    def fall(self):
         for state in self.states:
             for cell in state:
                 cell[1] = cell[1] + 1
@@ -134,7 +151,6 @@ def text_to_screen(screen, text, x, y, size=50, color=(2, 2, 25)):
 
 
 def draw_circles(screen):
-
     circle1 = CircleWithShape(RED, 65, 200, 10, 10, cube)
     circle2 = CircleWithShape(RED, 65, 520, 10, 10, pyramide)
     circle3 = CircleWithShape(RED, 305, 200, 10, 10, angle)
@@ -174,7 +190,8 @@ def main():
     screen.fill((75, 75, 75))
     pg.font.init()
     basicfont = pygame.font.SysFont(None, 60)
-    text = basicfont.render('         Choose your forms.                     Press SPACE start.', True, (55, 0, 0), BLACK)
+    text = basicfont.render('         Choose your forms.                     Press SPACE start.', True, (55, 0, 0),
+                            BLACK)
     text1 = basicfont.render('Start', True, (55, 0, 0), BLACK)
 
     for k in range(BOX_HEIGHT):
@@ -194,16 +211,21 @@ def main():
     while running:
         keys = pygame.key.get_pressed()
         if keys[K_SPACE] and shape:
+            shape.draw(screen, False)
+            shape.rotate()
+            shape.draw(screen, True)
+
+        if keys[K_RIGHT] and shape:
+            if shape.can_move_right(fix_states):
                 shape.draw(screen, False)
-                shape.rotate(screen)
+                shape.move_side(True)
                 shape.draw(screen, True)
 
-        if keys[K_RIGHT]:
-            shape.move_side(True, fix_states)
-            print("key right pressed")
-        if keys[K_LEFT]:
-            shape.move_side(False, fix_states)
-            print("key left pressed")
+        if keys[K_LEFT] and shape:
+            if shape.can_move_left(fix_states):
+                shape.draw(screen, False)
+                shape.move_side(False)
+                shape.draw(screen, True)
 
         evt = pygame.event.get()
         for event in evt:
@@ -224,11 +246,12 @@ def main():
                         circle.draw(screen)
 
                 if selected_circles(circles) and not start_pressed:
-                    pg.draw.circle(screen, GREEN, (start_circle.x, start_circle.y), start_circle.rad, start_circle.thickness)
+                    pg.draw.circle(screen, GREEN, (start_circle.x, start_circle.y), start_circle.rad,
+                                   start_circle.thickness)
                     start_circle.thickness = 1
                     start_circle.draw(screen)
                     text_to_screen(screen, 'Start', start_circle.x - 25, start_circle.y, 500, BLACK)
-                    if start_circle.x - start_circle.rad < pos[0] < start_circle.x + start_circle.rad\
+                    if start_circle.x - start_circle.rad < pos[0] < start_circle.x + start_circle.rad \
                             and start_circle.y - start_circle.rad < pos[1] < start_circle.y + start_circle.rad:
                         start_pressed = True
 
@@ -237,23 +260,22 @@ def main():
                     start_circle.draw(screen)
                     text_to_screen(screen, 'Choose your forms', start_circle.x - 100, start_circle.y, 500, BLACK)
 
-
-
         if start_pressed and not shape:
-                shape_structure = copy.deepcopy(selected_shapes[random.randint(0, len(selected_shapes) - 1)])
-                shape = Shape(BOX_COORDS[0], BOX_COORDS[1], SQUARE_SIZE, shape_structure, YELLOW, RED)
-                print('new shape created', shape.state)
+            shape_structure = copy.deepcopy(selected_shapes[random.randint(0, len(selected_shapes) - 1)])
+            shape = Shape(BOX_COORDS[0], BOX_COORDS[1], SQUARE_SIZE, shape_structure, YELLOW, RED)
+            print('new shape created', shape.state)
 
-        if shape and shape.can_move(fix_states):
+        if shape and shape.can_fall(fix_states):
             shape.draw(screen, False)
-            shape.fall(fix_states)
+            shape.fall()
             shape.draw(screen, True)
             print('keep drawing shape...')
-        else:
+        elif shape and not shape.can_fall(fix_states):
+            fix_states.extend(shape.state)
             shape = None
 
         pg.display.update()
-        clock.tick(5)
+        clock.tick(10)
 
 
 if __name__ == "__main__":
