@@ -48,7 +48,7 @@ selected_shapes = []
 
 class Square(object):
 
-    def __init__(self, x, y, size, color=RED):
+    def __init__(self, x, y, size=SQUARE_SIZE, color=RED):
         self.x = x
         self.y = y
         self.size = size
@@ -98,25 +98,25 @@ class Shape(object):
             if coordinates[0] == 0:
                 return False
             for fix_coordinates in fix_states:
-                if fix_coordinates[0] == coordinates[0] - 1:
+                if fix_coordinates[0] == coordinates[0] - 1 and fix_coordinates[1] == coordinates[1]:
                     return False
         return True
 
     def can_move_right(self, fix_states):
         for coordinates in self.state:
-            if coordinates[0] == BOX_WIDTH:
+            if coordinates[0] == BOX_WIDTH-1:
                 return False
             for fix_coordinates in fix_states:
-                if fix_coordinates[0] == coordinates[0] + 1:
+                if fix_coordinates[0] == coordinates[0] + 1 and fix_coordinates[1] == coordinates[1]:
                     return False
         return True
 
     def can_fall(self, fix_states):
         for coordinates in self.state:
-            if coordinates[1] == BOX_HEIGHT - 1:
+            if coordinates[1] == BOX_HEIGHT-1:
                 return False
             for fix_coordinates in fix_states:
-                if fix_coordinates[1] == coordinates[1] - 1:
+                if fix_coordinates[1] == coordinates[1] + 1 and fix_coordinates[0] == coordinates[0]:
                     return False
         return True
 
@@ -141,6 +141,36 @@ class Shape(object):
             rect.draw(screen)
 
 
+def redraw(screen, fixed_states, color):
+    for coordinates in fixed_states:
+        x, y = BOX_COORDS[0] + coordinates[0] * SQUARE_SIZE, BOX_COORDS[1] + coordinates[1] * SQUARE_SIZE
+        square = Square(x, y, SQUARE_SIZE, color)
+        square.draw(screen)
+
+
+def can_rotate(shape, fixed_states):
+    for coordinates in shape.state:
+        if coordinates[0] < 0:
+            for coords in shape.state:
+                coords[0] += 1
+            can_rotate(shape, fixed_states)
+        if coordinates[0] > BOX_WIDTH - 1:
+            for coords in shape.state:
+                coords[0] -= 1
+                print('moving shape to left after rotation')
+            can_rotate(shape, fixed_states)
+        if coordinates[1] > BOX_HEIGHT - 1:
+            for coords in shape.state:
+                coords[1] -= 1
+            can_rotate(shape, fixed_states)
+    print('shape state', shape.state)
+    if coordinates in fixed_states:
+        return False
+    else:
+        return True
+
+
+
 def text_to_screen(screen, text, x, y, size=50, color=(2, 2, 25)):
     try:
         text = str(text)
@@ -148,6 +178,24 @@ def text_to_screen(screen, text, x, y, size=50, color=(2, 2, 25)):
         screen.blit(text, (x, y))
     except:
         print('Font Error, saw it coming')
+
+
+def check_fixed_state(fixed_state):
+    counter = 0
+    for row_number in reversed(range(BOX_HEIGHT)):
+        for coordinates in fixed_state:
+            if coordinates[1] == row_number:
+                counter += 1
+        if counter == BOX_WIDTH:
+            fixed_state = [coords for coords in fixed_state if coords[1] != row_number]
+            for coordinates in fixed_state:
+                if coordinates[1] < row_number:
+                    coordinates[1] += 1
+            fixed_state = check_fixed_state(fixed_state)
+        counter = 0
+
+    return fixed_state
+
 
 
 def draw_circles(screen):
@@ -212,10 +260,14 @@ def main():
         keys = pygame.key.get_pressed()
         if keys[K_SPACE] and shape:
             shape.draw(screen, False)
+            init_state = shape.state
             shape.rotate()
+            if not can_rotate(shape, fix_states):
+                shape.state = init_state
             shape.draw(screen, True)
 
         if keys[K_RIGHT] and shape:
+            print(" w pressed")
             if shape.can_move_right(fix_states):
                 shape.draw(screen, False)
                 shape.move_side(True)
@@ -223,6 +275,7 @@ def main():
 
         if keys[K_LEFT] and shape:
             if shape.can_move_left(fix_states):
+                print(" q pressed")
                 shape.draw(screen, False)
                 shape.move_side(False)
                 shape.draw(screen, True)
@@ -273,7 +326,9 @@ def main():
         elif shape and not shape.can_fall(fix_states):
             fix_states.extend(shape.state)
             shape = None
-
+        redraw(screen, fix_states, RED)
+        fix_states = check_fixed_state(fix_states)
+        redraw(screen, fix_states, YELLOW)
         pg.display.update()
         clock.tick(10)
 
