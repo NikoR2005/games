@@ -170,7 +170,6 @@ def can_rotate(shape, fixed_states):
         return True
 
 
-
 def text_to_screen(screen, text, x, y, size=50, color=(2, 2, 25)):
     try:
         text = str(text)
