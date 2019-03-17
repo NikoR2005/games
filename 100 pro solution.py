@@ -18,6 +18,8 @@ for i in range(2000, 3201):
 
 print(num)
 
+#----------------------------------------#
+
 Question:
 Write a program which can compute the factorial of a given numbers.
 The results should be printed in a comma-separated sequence on a single line.
@@ -43,6 +45,7 @@ def factoroal(n):
 
 print(factoroal(8))
 
+#----------------------------------------#
 
 Question 3
 Level 1
@@ -58,7 +61,57 @@ Hints:
 In case of input data being supplied to the question, it should be assumed to be a console input.
 Consider use dict()
 
+
+def factorial(n):
+    if n < 0:
+        raise Exception
+    if n == 0:
+        return 1
+    result = 1
+
+    for i in range(1,n+1):
+        result = result * i
+
+    return result
+
+def fact(n):
+    if n < 0:
+        raise Exception
+    if n == 0:
+        return 1
+    return n*fact(n-1)
+
+
+print(fact(3))
+print(factorial(8))
+print(2**63)
+
+
+#----------------------------------------#
+Question 3
+Level 1
+
+Question:
+With a given integral number n, write a program to generate a dictionary that contains (i, i*i) such that is an integral number between 1 and n (both included). and then the program should print the dictionary.
+Suppose the following input is supplied to the program:
+8
+Then, the output should be:
+{1: 1, 2: 4, 3: 9, 4: 16, 5: 25, 6: 36, 7: 49, 8: 64}
+
+Hints:
+In case of input data being supplied to the question, it should be assumed to be a console input.
+Consider use dict()
 '''
 
+my_map = {1:1, 2:4, 3:9}
+print(my_map[1])
+
+def all_square(n):
+    my_map = {}
+    for i in range(1, n+1):
+        my_map[i] = i*i
+    return my_map
+
+print(all_square(8))
 
 
