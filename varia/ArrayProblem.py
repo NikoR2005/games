@@ -1,28 +1,25 @@
-int_list = [-22, 555, -2, -1, 99999999999999, -99]
+int_list = [-20, 50, 4874897498, - 4776776757, -43578943, 45, 67, -98]
 
 
-def change_int_list(int_list):
-    e = 0
-    for i in int_list:
-        if int_list[e] < 0:
-            int_list[e] = i * -1
-        e = e + 1
 
-        print(int_list)
 
 
 def find_int_same_sign(int_list):
     result = []
-    negative = int_list[0] <= 0
-    result.append(int_list[0])
+    e = 2
+    negative = int_list[e] > 0
+    positive = int_list[e] < 0
+    result.append(int_list)
     for i in int_list:
         if negative and i <= 0:
+            i = i * -1
             result.append(i)
-        if not negative and i > 0:
+            print('neg')
+        else:
             result.append(i)
+            print('pos')
 
-        if (negative and i > 0) or (not negative and i <= 0):
-            break
+        e = e + 1
 
     return result
 

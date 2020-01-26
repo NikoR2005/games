@@ -1,3 +1,33 @@
+
+'''BOX_HEIGHT = 4
+BOX_WIDTH = 3
+
+
+def check_fixed_state(fixed_state):
+    counter = 0
+    for row_number in reversed(range(BOX_HEIGHT)):
+        for coordinates in fixed_state:
+            if coordinates[1] == row_number:
+                counter += 1
+        if counter == BOX_WIDTH:
+            fixed_state = [coords for coords in fixed_state if coords[1] != row_number]
+            for coordinates in fixed_state:
+                if coordinates[1] < row_number:
+                    coordinates[1] += 1
+            fixed_state = check_fixed_state(fixed_state)
+        counter = 0
+
+    return fixed_state
+
+
+fixed_state = [[0, 3], [1, 3], [2, 3], [0,2], [1,2],[2, 2], [0,1]]
+
+print(check_fixed_state(fixed_state))
+
+print([1,1] in [[1,2], [1,1]])
+'''
+
+
 import sys
 import pygame
 import pygame.font
@@ -6,24 +36,21 @@ from pygame.locals import *
 import random
 import time
 
-random.randrange
+
 BLACK = pg.Color('black')
 WHITE = pg.Color('white')
 RED = pg.Color('red')
 clock = pg.time.Clock()
 screen = pygame.display.set_mode((800, 800))
-grid_rows = 145
-square_size = 30
+grid_rows = 147
+square_size = 20
 grid_colomns = 17
-grid_COORDS = (0, 0)
+grid_COORDS = (100, 50)
 gameover = pg.draw.rect(screen, RED, [350, - 400, 850, -400])
 RIGHT = 0
 LEFT = 1
 UP = 2
 DOWN = 3
-newfruit = False
-fruiteaten = False
-
 
 
 class Snake(object):
@@ -50,21 +77,20 @@ class Snake(object):
         return last
 
     def eat(self, fruit, last):
-        global fruiteaten
         if fruit == self.body[0]:
-            self.body.append(last)
-            fruiteaten = True
+            self.body.append[last]
+            pygame.mixer.music.load('apple.mp3')
+            pygame.mixer.music.play(2)
 
     def hit_wall(self, x1, x2, y1, y2):
         if self.body[0][0] < x1 or self.body[0][0] > x2 or self.body[0][1] < y1 or self.body[0][1] > y2 :
             return True
 
     def hit_itself(self):
-
-        for i in self.body:
-            if len(self.body) == 1:
+        for any_body_case in self.body:
+            if len(self.body) - 1 == 1 and self.body[0] == any_body_case:
                 return False
-            if self.body[0] < i:
+            if len(self.body) - 1 > 1 and self.body[0] == any_body_case:
                 return True
 
 
@@ -86,23 +112,9 @@ def draw_snake(snake, grid, screen_for_snake):
                     pg.draw.rect(screen_for_snake, cell.color, rect)
 
 
-def draw_fruitxy(grid, fruit, screen_for_fruit):
-    global fruiteaten
-    if fruiteaten:
-        fruit = [random.randint(1, 10), random.randint(1, 10)]
-        fruiteaten = False
-    for row in grid:
-         for cell in row:
-            if fruit[0] == cell.grid_position[0] and fruit[1] == cell.grid_position[1]:
-                rect = pg.rect.Rect(cell.y, cell.x, square_size, square_size)
-                pg.draw.rect(screen_for_fruit, BLACK, rect)
-            if fruiteaten == True:
-                pg.draw.rect(screen_for_fruit, WHITE, rect)
-                FBD = True
-
-
 def draw_end(surface):
     pygame.draw.rect(surface, BLACK, [150, 100, 500, 100])
+
 
 
 def main():
@@ -111,8 +123,20 @@ def main():
     grid = []
     screen.fill(WHITE)
     pygame.display.set_caption("Snakes")
-    fruit = [random.randint(1, 10), random.randint(1, 10)]
-    snake= Snake(random.randint(2, 2),random.randint(2, 2), move_value, RED)
+    snake = Snake(2, 2, move_value, RED)
+    fruit = [random.randint(1, 16), random.randint(1, 16)]
+    print('|--------------|'
+          ''
+          ''
+          ''
+          ''
+          '',
+          fruit,'' \
+                '' \
+                '' \
+                '' \
+                '' \
+                '|-------------|')
 
     for k in range(grid_rows):
         row = []
@@ -136,33 +160,20 @@ def main():
             move_value = UP
         if keys[K_DOWN]:
             move_value = DOWN
-        if keys[K_SPACE]:
-            time.sleep(5)
-
         last = snake.move(move_value)
+        # create_grid()
         snake.eat(fruit, last)
         if snake.hit_itself() == True:
             print('dead')
-            break
-        if fruiteaten:
-            fruit = [random.randint(1, 10), random.randint(1, 10)]
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
         pygame.display.flip()
         pg.draw.rect(screen, WHITE, [0, 0, 800, 800])
-        pg.draw.line(screen, BLACK, [0, 0], [0, 510])
-        pg.draw.line(screen, BLACK, [0, 0], [510, 0])
-        pg.draw.line(screen, BLACK, [510, 510], [510, 0])
-        pg.draw.line(screen, BLACK, [0, 510], [510, 510])
         if snake.hit_wall(0, 16, 0, 16) == True:
-            print('crashed')
-            break
-        if snake.hit_itself() == True:
-            print('killed')
-            break
+            draw_end(screen)
         draw_snake(snake, grid, screen)
-        draw_fruitxy(grid, fruit, screen)
         pygame.display.update()
         clock.tick(5)
 
